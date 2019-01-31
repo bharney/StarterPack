@@ -1,0 +1,447 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sqlUserName": {
+      "defaultValue": "sqlUserName",
+      "type": "securestring"
+    },
+    "sqlPassword": {
+      "defaultValue": "sqlPassword",
+      "type": "securestring"
+    },
+    "ClientSecret": {
+      "defaultValue": "ClientSecret",
+      "type": "securestring"
+    },
+    "ClientId": {
+      "defaultValue": "ClientId",
+      "type": "securestring"
+    },
+    "VaultEndpoint": {
+      "defaultValue": "VaultEndpoint",
+      "type": "securestring"
+    },
+    "JSStarterApp": {
+      "defaultValue": "jsstarterpack",
+      "type": "string"
+    },
+    "JSStarterVault": {
+      "defaultValue": "JSStarterVault",
+      "type": "string"
+    },
+    "JSStarterAppInsights": {
+      "defaultValue": "jsstarterpack",
+      "type": "string"
+    },
+    "jssstarterblob": {
+      "defaultValue": "jsstarterblob",
+      "type": "string"
+    },
+    "JSStarterServicePlan": {
+      "defaultValue": "ServicePlan698eb4ae-9e2b",
+      "type": "string"
+    },
+    "JSStarterSqlServer": {
+      "defaultValue": "jsstartersqlserver",
+      "type": "string"
+    },
+    "Token--Key": {
+      "defaultValue": "Token--Key",
+      "type": "securestring"
+    },
+    "Token--Issuer": {
+      "defaultValue": "Token--Issuer",
+      "type": "securestring"
+    },
+    "MailService--Key": {
+      "defaultValue": "MailService--Key",
+      "type": "securestring"
+    },
+    "MailService--User": {
+      "defaultValue": "MailService--User",
+      "type": "securestring"
+    },
+    "BlobService--Key": {
+      "defaultValue": "BlobService--Key",
+      "type": "securestring"
+    },
+    "BlobService--Account": {
+      "defaultValue": "BlobService--Account",
+      "type": "securestring"
+    },
+    "SeedAccount--UserName": {
+      "defaultValue": "SeedAccount--UserName",
+      "type": "securestring"
+    },
+    "SeedAccount--Password": {
+      "defaultValue": "SeedAccount--Password",
+      "type": "securestring"
+    },
+    "ConnectionStrings--DefaultConnection": {
+      "defaultValue": "ConnectionStrings--DefaultConnection",
+      "type": "securestring"
+    },
+    "JSStarterSqlDB": {
+      "defaultValue": "jsstartersqldb",
+      "type": "securestring"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/components",
+      "kind": "web",
+      "name": "[parameters('JSStarterAppInsights')]",
+      "apiVersion": "2015-05-01",
+      "location": "westus2",
+      "scale": null,
+      "properties": {
+        "Application_Type": "web",
+        "Flow_Type": "Bluefield",
+        "Request_Source": "rest"
+      },
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "name": "[parameters('JSStarterVault')]",
+      "apiVersion": "2016-10-01",
+      "location": "westus2",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
+        "tenantId": "[subscription().tenantId]",
+        "accessPolicies": [
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "778a718e-4dda-40af-9d3f-0f334a652b54",
+            "permissions": {
+              "keys": [],
+              "secrets": [
+                "get",
+                "list"
+              ],
+              "certificates": []
+            }
+          }
+        ],
+        "enabledForDeployment": false,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": true
+      },
+      "dependsOn": [],
+      "resources": [
+        {
+          "type": "secrets",
+          "name": "SeedAccount--UserName",
+          "apiVersion": "2016-10-01",
+          "location": "westus2",
+          "scale": null,
+          "properties": {
+            "attributes": {
+              "enabled": true
+            },
+            "value": "[parameters('SeedAccount--UserName')]"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.KeyVault/vaults/', parameters('JSStarterVault'))]"
+          ]
+        },
+        {
+          "type": "secrets",
+          "name": "Token--Key",
+          "apiVersion": "2016-10-01",
+          "location": "westus2",
+          "scale": null,
+          "properties": {
+            "attributes": {
+              "enabled": true
+            },
+            "value": "[parameters('Token--Key')]"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.KeyVault/vaults/', parameters('JSStarterVault'))]"
+          ]
+        },
+        {
+          "type": "secrets",
+          "name": "Token--Issuer",
+          "apiVersion": "2016-10-01",
+          "location": "westus2",
+          "scale": null,
+          "properties": {
+            "attributes": {
+              "enabled": true
+            },
+            "value": "[parameters('Token--Issuer')]"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.KeyVault/vaults/', parameters('JSStarterVault'))]"
+          ]
+        },
+        {
+          "type": "secrets",
+          "name": "MailService--User",
+          "apiVersion": "2016-10-01",
+          "location": "westus2",
+          "scale": null,
+          "properties": {
+            "attributes": {
+              "enabled": true
+            },
+            "value": "[parameters('MailService--User')]"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.KeyVault/vaults/', parameters('JSStarterVault'))]"
+          ]
+        },
+        {
+          "type": "secrets",
+          "name": "SeedAccount--Password",
+          "apiVersion": "2016-10-01",
+          "location": "westus2",
+          "scale": null,
+          "properties": {
+            "attributes": {
+              "enabled": true
+            },
+            "value": "[parameters('SeedAccount--Password')]"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.KeyVault/vaults/', parameters('JSStarterVault'))]"
+          ]
+        },
+        {
+          "type": "secrets",
+          "name": "ConnectionStrings--DefaultConnection",
+          "apiVersion": "2016-10-01",
+          "location": "westus2",
+          "scale": null,
+          "properties": {
+            "attributes": {
+              "enabled": true
+            },
+            "value": "[parameters('ConnectionStrings--DefaultConnection')]"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.KeyVault/vaults/', parameters('JSStarterVault'))]"
+          ]
+        },
+        {
+          "type": "secrets",
+          "name": "MailService--Key",
+          "apiVersion": "2016-10-01",
+          "location": "westus2",
+          "scale": null,
+          "properties": {
+            "attributes": {
+              "enabled": true
+            },
+            "value": "[parameters('MailService--Key')]"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.KeyVault/vaults/', parameters('JSStarterVault'))]"
+          ]
+        },
+        {
+          "type": "secrets",
+          "name": "BlobService--Account",
+          "apiVersion": "2016-10-01",
+          "location": "westus2",
+          "scale": null,
+          "properties": {
+            "attributes": {
+              "enabled": true
+            },
+            "value": "[parameters('BlobService--Account')]"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.KeyVault/vaults/', parameters('JSStarterVault'))]"
+          ]
+        },
+        {
+          "type": "secrets",
+          "name": "BlobService--Key",
+          "apiVersion": "2016-10-01",
+          "location": "westus2",
+          "scale": null,
+          "properties": {
+            "attributes": {
+              "enabled": true
+            },
+            "value": "[parameters('BlobService--Key')]"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.KeyVault/vaults/', parameters('JSStarterVault'))]"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "[parameters('JSStarterSqlServer')]",
+      "type": "Microsoft.Sql/servers",
+      "location": "westus2",
+      "apiVersion": "2014-04-01",
+      "properties": {
+        "administratorLogin": "[parameters('sqlUserName')]",
+        "administratorLoginPassword": "[parameters('sqlPassword')]"
+      },
+      "resources": [
+        {
+          "name": "[parameters('JSStarterSqlDB')]",
+          "kind": "v12.0,user",
+          "type": "databases",
+          "location": "westus2",
+          "properties": {
+            "collation": "SQL_Latin1_General_CP1_CI_AS",
+            "maxSizeBytes": "2147483648",
+            "zoneRedundant": false,
+            "edition": "Basic"
+          },
+          "apiVersion": "2014-04-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers/', parameters('JSStarterSqlServer'))]"
+          ]
+        },
+        {
+          "type": "firewallRules",
+          "apiVersion": "2014-04-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers/', parameters('JSStarterSqlServer'))]"
+          ],
+          "location": "westus2",
+          "name": "AllowAppFirewallIps",
+          "properties": {
+            "endIpAddress": "0.0.0.0",
+            "startIpAddress": "0.0.0.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "kind": "Storage",
+      "name": "[parameters('jssstarterblob')]",
+      "apiVersion": "2018-03-01-preview",
+      "location": "westus2",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": false,
+        "encryption": {
+          "services": {
+            "file": {
+              "enabled": true
+            },
+            "blob": {
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        }
+      },
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "sku": {
+        "name": "S1",
+        "tier": "Standard",
+        "size": "S1",
+        "family": "S",
+        "capacity": 1
+      },
+      "kind": "app",
+      "name": "[parameters('JSStarterServicePlan')]",
+      "apiVersion": "2016-09-01",
+      "location": "westus2",
+      "scale": null,
+      "properties": {
+        "name": "[parameters('JSStarterServicePlan')]"
+      },
+      "dependsOn": [],
+      "resources": [
+
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "kind": "app",
+      "name": "[parameters('JSStarterApp')]",
+      "apiVersion": "2015-08-01",
+      "location": "westus2",
+      "identity": {
+        "principalId": null,
+        "tenantId": null,
+        "type": "SystemAssigned"
+      },
+      "scale": null,
+      "properties": {
+        "enabled": true,
+        "hostNameSslStates": [
+          {
+            "name": "[concat(parameters('JSStarterApp'),'.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "toUpdate": null,
+            "hostType": "Standard"
+          },
+          {
+            "name": "[concat(parameters('JSStarterApp'),'.scm.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "toUpdate": null,
+            "hostType": "Repository"
+          }
+        ],
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('JSStarterServicePlan'))]",
+        "reserved": false,
+        "siteConfig": null,
+        "scmSiteAlsoStopped": false,
+        "hostingEnvironmentProfile": null,
+        "clientAffinityEnabled": true,
+        "clientCertEnabled": false,
+        "hostNamesDisabled": false,
+        "containerSize": 0,
+        "dailyMemoryTimeQuota": 0,
+        "cloningInfo": null
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('JSStarterServicePlan'))]"
+      ],
+      "resources": [
+        {
+          "name": "appsettings",
+          "type": "config",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', parameters('JSStarterApp'))]"
+          ],
+          "tags": {
+            "displayName": "AppSettings"
+          },
+          "properties": {
+            "ClientSecret": "[parameters('ClientSecret')]",
+            "ClientId": "[parameters('ClientId')]",
+            "VaultEndpoint": "[parameters('VaultEndpoint')]",
+            "WEBSITE_NODE_DEFAULT_VERSION": "8.9.4"
+          }
+        }
+      ]
+    }
+  ]
+}
